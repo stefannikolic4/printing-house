@@ -1,0 +1,96 @@
+<main class="page">
+  <h1 class="page-title">Javne nabavke</h1>
+
+  @if (uspeh) {
+    <p class="alert alert-success" role="status">{{ uspeh }}</p>
+  }
+  @if (greska) {
+    <p class="alert alert-error" role="alert">{{ greska }}</p>
+  }
+
+  <section class="panel" aria-labelledby="nabavke-naslov">
+    <h2 id="nabavke-naslov">Vaše nabavke</h2>
+    <p class="panel-note">
+      Poziv za ponude traje 10 minuta. Nabavku dobija štamparija sa najnižom ukupnom ponudom
+      koja ima dovoljnu količinu svakog proizvoda.
+    </p>
+
+    <div class="table-wrap">
+      <table class="table">
+        <caption class="visually-hidden">Vaše javne nabavke</caption>
+        <thead>
+          <tr>
+            <th scope="col">Pokrenuta</th>
+            <th scope="col">Proizvodi (količina)</th>
+            <th scope="col">Status</th>
+            <th scope="col">Preostalo vreme</th>
+            <th scope="col">Izabrana štamparija</th>
+            <th scope="col" class="num">Ponuda (RSD)</th>
+            <th scope="col"><span class="visually-hidden">Izveštaj</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (n of nabavke; track n.id) {
+            <tr>
+              <td>{{ n.pokrenuta | date: 'dd.MM.yyyy. HH:mm' }}</td>
+              <td>
+                <ol class="order-items">
+                  @for (s of n.stavke; track $index) {
+                    <li>{{ s.naziv }} ({{ s.kolicina }})</li>
+                  }
+                </ol>
+              </td>
+              <td>
+                @switch (n.status) {
+                  @case ('otvorena') {
+                    Otvorena
+                  }
+                  @case ('zavrsena') {
+                    Završena
+                  }
+                  @default {
+                    Nijedna ponuda
+                  }
+                }
+              </td>
+              <td>
+                @if (n.status === 'otvorena' && n.preostalo) {
+                  {{ n.preostalo }}
+                } @else {
+                  —
+                }
+              </td>
+              <td>
+                @if (n.pobednik) {
+                  {{ n.pobednik }}
+                } @else {
+                  —
+                }
+              </td>
+              <td class="num">
+                @if (n.iznos !== null) {
+                  {{ n.iznos | number: '1.2-2' }}
+                } @else {
+                  —
+                }
+              </td>
+              <td class="cell-action">
+                @if (n.status !== 'otvorena') {
+                  <button type="button" class="btn btn--small btn--secondary" (click)="preuzmiIzvestaj(n)">
+                    PDF izveštaj
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="table-empty" colspan="7">
+                Još nemate javnih nabavki. Pokrenite ih potvrdom narudžbine u e-korpi.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

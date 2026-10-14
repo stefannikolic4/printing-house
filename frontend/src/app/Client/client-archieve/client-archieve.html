@@ -1,0 +1,120 @@
+<main class="page">
+  <h1 class="page-title">Arhiva proizvoda</h1>
+
+  <section class="panel" aria-labelledby="arhiva-naslov">
+    <h2 id="arhiva-naslov">Isporučeni i primljeni proizvodi</h2>
+
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+
+    <div class="table-wrap">
+      <table class="table">
+        <caption class="visually-hidden">Isporučeni i primljeni proizvodi</caption>
+        <thead>
+          <tr>
+            <th scope="col" [attr.aria-sort]="ariaSort('naziv')">
+              <button type="button" class="sort-btn" (click)="sortiraj('naziv')">
+                Proizvod
+                <span class="sort-icon" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" [attr.aria-sort]="ariaSort('kolicina')">
+              <button type="button" class="sort-btn" (click)="sortiraj('kolicina')">
+                Količina
+                <span class="sort-icon" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" [attr.aria-sort]="ariaSort('stamparija')">
+              <button type="button" class="sort-btn" (click)="sortiraj('stamparija')">
+                Štamparija
+                <span class="sort-icon" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" [attr.aria-sort]="ariaSort('datum')">
+              <button type="button" class="sort-btn" (click)="sortiraj('datum')">
+                Datum naručivanja
+                <span class="sort-icon" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Akcije</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of proizvodi; track p.id) {
+            <tr>
+              <td>{{ p.naziv }}</td>
+              <td class="num">{{ p.kolicina }}</td>
+              <td>{{ p.stamparija }}</td>
+              <td>{{ p.datum | date: 'dd.MM.yyyy.' }}</td>
+              <td><span class="status">{{ p.status }}</span></td>
+              <td class="cell-action">
+                @if (p.status === 'isporučeno') {
+                  <button type="button" class="btn btn--small" (click)="oznaciPrimljeno(p)">
+                    Označi kao primljeno
+                  </button>
+                } @else {
+                  <button type="button" class="btn btn--small btn--secondary" (click)="otvoriOcenu(p)">
+                    Oceni
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="table-empty" colspan="6">Još nemate isporučenih ni primljenih proizvoda.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  @if (ocenjivan) {
+    <section class="panel" aria-labelledby="ocena-naslov">
+      <h2 id="ocena-naslov">Ocena: {{ ocenjivan.naziv }}</h2>
+
+      @if (uspehOcene) {
+        <p class="alert alert-success" role="status">Ocena je sačuvana.</p>
+      }
+
+      <div class="vote" role="group" aria-label="Ocena proizvoda">
+        <button
+          type="button"
+          class="vote-btn"
+          [attr.aria-pressed]="ocena === 'svidja'"
+          (click)="postaviOcenu('svidja')"
+        >
+          Sviđa mi se
+        </button>
+        <button
+          type="button"
+          class="vote-btn"
+          [attr.aria-pressed]="ocena === 'nesvidja'"
+          (click)="postaviOcenu('nesvidja')"
+        >
+          Ne sviđa mi se
+        </button>
+      </div>
+
+      <form #ocenaForma="ngForm" (ngSubmit)="sacuvajOcenu()">
+        <div class="field">
+          <label for="komentar">Komentar</label>
+          <textarea
+            class="input"
+            id="komentar"
+            name="komentar"
+            rows="4"
+            [(ngModel)]="komentar"
+          ></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn">Sačuvaj</button>
+          <button type="button" class="btn btn--secondary" (click)="zatvoriOcenu()">Zatvori</button>
+        </div>
+      </form>
+    </section>
+  }
+</main>

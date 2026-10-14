@@ -1,0 +1,292 @@
+<main class="page">
+  <h1 class="page-title">Korisnici</h1>
+
+  @if (uspeh) {
+    <p class="alert alert-success" role="status">{{ uspeh }}</p>
+  }
+  @if (greska) {
+    <p class="alert alert-error" role="alert">{{ greska }}</p>
+  }
+
+  @if (zaBrisanje) {
+    <div class="alert alert-error" role="alertdialog" aria-labelledby="brisanje-naslov">
+      <p id="brisanje-naslov">
+        <strong>Obrisati nalog „{{ zaBrisanje.korisnickoIme }}"?</strong> Ova radnja se ne može poništiti.
+      </p>
+      <div class="btn-row">
+        <button type="button" class="btn btn--small btn--danger" (click)="potvrdiBrisanje()">
+          Da, obriši
+        </button>
+        <button type="button" class="btn btn--small btn--secondary" (click)="otkaziBrisanje()">
+          Odustani
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (izmena) {
+    <section class="panel" aria-labelledby="izmena-naslov">
+      <h2 id="izmena-naslov">Izmena naloga: {{ izmena.korisnickoIme }}</h2>
+
+      <form #forma="ngForm" (ngSubmit)="sacuvaj(forma)" novalidate>
+        <div class="grid-2">
+          <div class="field">
+            <label for="izKorisnickoIme">Korisničko ime</label>
+            <input
+              class="input"
+              id="izKorisnickoIme"
+              name="korisnickoIme"
+              type="text"
+              readonly
+              aria-describedby="izKorisnickoImePomoc"
+              [ngModel]="izmena.korisnickoIme"
+            />
+            <p id="izKorisnickoImePomoc" class="hint">Korisničko ime se ne može menjati.</p>
+          </div>
+
+          <div class="field">
+            <label for="izEmail">E-mail adresa</label>
+            <input
+              class="input"
+              id="izEmail"
+              name="email"
+              type="email"
+              required
+              email
+              [(ngModel)]="izmena.email"
+              #emailPolje="ngModel"
+            />
+            @if (emailPolje.invalid && (emailPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite ispravnu e-mail adresu.</p>
+            }
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="izIme">Ime</label>
+            <input
+              class="input"
+              id="izIme"
+              name="ime"
+              type="text"
+              required
+              [(ngModel)]="izmena.ime"
+              #imePolje="ngModel"
+            />
+            @if (imePolje.invalid && (imePolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite ime.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="izPrezime">Prezime</label>
+            <input
+              class="input"
+              id="izPrezime"
+              name="prezime"
+              type="text"
+              required
+              [(ngModel)]="izmena.prezime"
+              #prezimePolje="ngModel"
+            />
+            @if (prezimePolje.invalid && (prezimePolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite prezime.</p>
+            }
+          </div>
+        </div>
+
+        <div class="field field--narrow">
+          <label for="izTelefon">Kontakt telefon</label>
+          <input
+            class="input"
+            id="izTelefon"
+            name="telefon"
+            type="tel"
+            required
+            pattern="^\+?[0-9 \/\-]{6,20}$"
+            [(ngModel)]="izmena.telefon"
+            #telefonPolje="ngModel"
+          />
+          @if (telefonPolje.invalid && (telefonPolje.touched || forma.submitted)) {
+            <p class="field-error" role="alert">Unesite ispravan broj telefona.</p>
+          }
+        </div>
+
+        @if (izmena.tip !== 'fizicko') {
+          <div class="field">
+            <label for="izNaziv">Naziv institucije</label>
+            <input
+              class="input"
+              id="izNaziv"
+              name="nazivInstitucije"
+              type="text"
+              required
+              [(ngModel)]="izmena.nazivInstitucije"
+              #nazivPolje="ngModel"
+            />
+            @if (nazivPolje.invalid && (nazivPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite naziv institucije.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="izAdresa">Adresa sedišta</label>
+            <input
+              class="input"
+              id="izAdresa"
+              name="adresaSedista"
+              type="text"
+              required
+              [(ngModel)]="izmena.adresaSedista"
+              #adresaPolje="ngModel"
+            />
+            @if (adresaPolje.invalid && (adresaPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite adresu sedišta.</p>
+            }
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="izMaticni">Matični broj</label>
+              <input
+                class="input"
+                id="izMaticni"
+                name="maticniBroj"
+                type="text"
+                inputmode="numeric"
+                maxlength="8"
+                required
+                pattern="^\d{8}$"
+                aria-describedby="izMaticniPomoc"
+                [(ngModel)]="izmena.maticniBroj"
+                #maticniPolje="ngModel"
+              />
+              <p
+                id="izMaticniPomoc"
+                class="hint"
+                [class.hint--error]="maticniPolje.invalid && (maticniPolje.touched || forma.submitted)"
+              >
+                Tačno 8 cifara.
+              </p>
+            </div>
+
+            <div class="field">
+              <label for="izPib">PIB</label>
+              <input
+                class="input"
+                id="izPib"
+                name="pib"
+                type="text"
+                inputmode="numeric"
+                maxlength="9"
+                required
+                pattern="^[1-9]\d{8}$"
+                aria-describedby="izPibPomoc"
+                [(ngModel)]="izmena.pib"
+                #pibPolje="ngModel"
+              />
+              <p
+                id="izPibPomoc"
+                class="hint"
+                [class.hint--error]="pibPolje.invalid && (pibPolje.touched || forma.submitted)"
+              >
+                9 cifara, ne sme počinjati nulom.
+              </p>
+            </div>
+          </div>
+        }
+
+        <div class="btn-row">
+          <button type="submit" class="btn">Sačuvaj izmene</button>
+          <button type="button" class="btn btn--secondary" (click)="zatvoriIzmenu()">Odustani</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="panel" aria-labelledby="korisnici-naslov">
+    <h2 id="korisnici-naslov">Svi korisnički nalozi</h2>
+
+    <div class="field field--narrow">
+      <label for="filterTip">Vrsta korisnika</label>
+      <select
+        class="input"
+        id="filterTip"
+        name="filterTip"
+        [(ngModel)]="filterTip"
+        (ngModelChange)="filtriraj()"
+      >
+        <option value="">Svi korisnici</option>
+        <option value="fizicko">Klijenti, fizička lica</option>
+        <option value="pravno">Klijenti, pravna lica</option>
+        <option value="stamparija">Štamparije</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <caption class="visually-hidden">Korisnički nalozi</caption>
+        <thead>
+          <tr>
+            <th scope="col"><span class="visually-hidden">Slika</span></th>
+            <th scope="col">Korisnik</th>
+            <th scope="col">Vrsta</th>
+            <th scope="col">Kontakt</th>
+            <th scope="col"><span class="visually-hidden">Akcije</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (k of korisnici; track k.id) {
+            <tr>
+              <td>
+                <img
+                  class="avatar avatar--small"
+                  [src]="k.slika"
+                  [alt]="'Profilna slika: ' + k.korisnickoIme"
+                  width="40"
+                  height="40"
+                />
+              </td>
+              <td>
+                {{ k.ime }} {{ k.prezime }}
+                <span class="item-meta">{{ k.korisnickoIme }}</span>
+              </td>
+              <td>
+                @switch (k.tip) {
+                  @case ('fizicko') {
+                    Klijent, fizičko lice
+                  }
+                  @case ('pravno') {
+                    Klijent, pravno lice
+                  }
+                  @default {
+                    Štamparija
+                  }
+                }
+              </td>
+              <td>
+                {{ k.email }}
+                <span class="item-meta">{{ k.telefon }}</span>
+              </td>
+              <td class="cell-action">
+                <div class="btn-row">
+                  <button type="button" class="btn btn--small btn--secondary" (click)="izmeni(k)">
+                    Izmeni
+                  </button>
+                  <button type="button" class="btn btn--small btn--danger" (click)="pokreniBrisanje(k)">
+                    Obriši
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="table-empty" colspan="5">Nema korisnika za izabranu vrstu.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

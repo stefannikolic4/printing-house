@@ -1,0 +1,196 @@
+<main class="page">
+  <h1 class="page-title">E-korpa</h1>
+
+  @if (uspeh) {
+    <p class="alert alert-success" role="status">{{ uspeh }}</p>
+  }
+  @if (greska) {
+    <p class="alert alert-error" role="alert">{{ greska }}</p>
+  }
+
+  @if (grupe.length === 0) {
+    <section class="panel">
+      <p class="panel-note">
+        Korpa je prazna. <a routerLink="/klijent/pretraga">Pretražite proizvode</a>
+      </p>
+    </section>
+  } @else {
+    @for (g of grupe; track g.stamparijaId) {
+      <section class="panel" [attr.aria-label]="'Štamparija ' + g.stamparija">
+        <div class="shop-head">
+          <h2>{{ g.stamparija }}</h2>
+          <span class="shop-city">{{ g.grad }}</span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="visually-hidden">Proizvodi iz štamparije {{ g.stamparija }}</caption>
+            <thead>
+              <tr>
+                <th scope="col">Proizvod</th>
+                <th scope="col" class="num">Količina</th>
+                <th scope="col">Vrsta štampe</th>
+                <th scope="col" class="num">Ukupno (RSD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of g.stavke; track $index) {
+                <tr>
+                  <td>{{ s.naziv }}</td>
+                  <td class="num">{{ s.kolicina }}</td>
+                  <td>{{ s.tipStampe }}</td>
+                  <td class="num">{{ s.ukupno | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Ukupno za ovu štampariju</td>
+                <td class="num">{{ g.ukupno | number: '1.2-2' }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+    }
+
+    <section class="panel" aria-label="Potvrda narudžbine">
+      <p class="cart-total">
+        <span>Ukupno za sve štamparije</span>
+        <strong>{{ ukupno | number: '1.2-2' }} RSD</strong>
+      </p>
+
+      @if (jePravnoLice) {
+        <p class="alert alert-info">
+          Potvrdom se ne formiraju fakture. Štamparijama se šalje poziv za ponude koji traje 10 minuta.
+        </p>
+      } @else {
+        <p class="panel-note">Za svaku štampariju formira se posebna faktura.</p>
+      }
+
+      <div class="btn-row">
+        <button type="button" class="btn" (click)="potvrdi()">POTVRDI</button>
+      </div>
+    </section>
+  }
+
+  @if (placanjeOtvoreno) {
+    <section class="panel" aria-labelledby="placanje-naslov">
+      <h2 id="placanje-naslov">Plaćanje</h2>
+
+      <p class="alert alert-info">
+        Test okruženje: unesite probne podatke kartice, ne pravu karticu.
+      </p>
+
+      @if (placanjeGreska) {
+        <p class="alert alert-error" role="alert">{{ placanjeGreska }}</p>
+      }
+
+      <form #placanjeForma="ngForm" (ngSubmit)="plati(placanjeForma)" novalidate>
+        <div class="field field--narrow">
+          <label for="tipKartice">Tip kartice</label>
+          <select
+            class="input"
+            id="tipKartice"
+            name="tipKartice"
+            required
+            [(ngModel)]="tipKartice"
+            #tipPolje="ngModel"
+          >
+            <option value="" disabled>Izaberite tip kartice</option>
+            <option value="Visa">Visa</option>
+            <option value="Mastercard">Mastercard</option>
+            <option value="Maestro">Maestro</option>
+            <option value="DinaCard">DinaCard</option>
+          </select>
+          @if (tipPolje.invalid && (tipPolje.touched || placanjeForma.submitted)) {
+            <p class="field-error" role="alert">Izaberite tip kartice.</p>
+          }
+        </div>
+
+        <div class="field field--narrow">
+          <label for="brojKartice">Broj kartice</label>
+          <input
+            class="input"
+            id="brojKartice"
+            name="brojKartice"
+            type="text"
+            inputmode="numeric"
+            autocomplete="cc-number"
+            maxlength="19"
+            required
+            pattern="^\d{13,19}$"
+            aria-describedby="brojKarticePomoc"
+            [(ngModel)]="brojKartice"
+            #brojPolje="ngModel"
+          />
+          <p
+            id="brojKarticePomoc"
+            class="hint"
+            [class.hint--error]="brojPolje.invalid && (brojPolje.touched || placanjeForma.submitted)"
+          >
+            Od 13 do 19 cifara, bez razmaka.
+          </p>
+        </div>
+
+        <div class="grid-2 field--narrow">
+          <div class="field">
+            <label for="istek">Datum isteka</label>
+            <input
+              class="input"
+              id="istek"
+              name="istek"
+              type="text"
+              inputmode="numeric"
+              autocomplete="cc-exp"
+              placeholder="MM/GG"
+              maxlength="5"
+              required
+              pattern="^(0[1-9]|1[0-2])/\d{2}$"
+              aria-describedby="istekPomoc"
+              [(ngModel)]="istek"
+              #istekPolje="ngModel"
+            />
+            <p
+              id="istekPomoc"
+              class="hint"
+              [class.hint--error]="istekPolje.invalid && (istekPolje.touched || placanjeForma.submitted)"
+            >
+              Format MM/GG.
+            </p>
+          </div>
+
+          <div class="field">
+            <label for="cvc">CVC kod</label>
+            <input
+              class="input"
+              id="cvc"
+              name="cvc"
+              type="text"
+              inputmode="numeric"
+              autocomplete="cc-csc"
+              maxlength="4"
+              required
+              pattern="^\d{3,4}$"
+              aria-describedby="cvcPomoc"
+              [(ngModel)]="cvc"
+              #cvcPolje="ngModel"
+            />
+            <p
+              id="cvcPomoc"
+              class="hint"
+              [class.hint--error]="cvcPolje.invalid && (cvcPolje.touched || placanjeForma.submitted)"
+            >
+              3 ili 4 cifre.
+            </p>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn">PLATI</button>
+          <button type="button" class="btn btn--secondary" (click)="zatvoriPlacanje()">ODUSTANI</button>
+        </div>
+      </form>
+    </section>
+  }
+</main>

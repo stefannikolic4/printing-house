@@ -1,0 +1,227 @@
+<main class="page">
+  <h1 class="page-title">Profil</h1>
+
+  <section class="panel" aria-labelledby="podaci-naslov">
+    <h2 id="podaci-naslov">Podaci štamparije</h2>
+
+    @if (uspeh) {
+      <p class="alert alert-success" role="status">Podaci su sačuvani.</p>
+    }
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+
+    <form #forma="ngForm" (ngSubmit)="sacuvaj(forma)" novalidate>
+      <div class="avatar-row">
+        <img
+          class="avatar"
+          [src]="slikaPreview ?? profilnaSlika"
+          alt="Profilna slika"
+          width="96"
+          height="96"
+        />
+
+        <div class="field">
+          <label for="slika">Promena profilne slike</label>
+          <input
+            class="file-input"
+            id="slika"
+            name="slika"
+            type="file"
+            accept="image/jpeg,image/png,image/gif"
+            aria-describedby="slikaPomoc"
+            (change)="onSlikaOdabrana($event)"
+          />
+          <p id="slikaPomoc" class="hint">JPG, PNG ili GIF, od 100×100 do 250×250 piksela.</p>
+          @if (slikaGreska) {
+            <p class="field-error" role="alert">{{ slikaGreska }}</p>
+          }
+        </div>
+      </div>
+
+      <fieldset class="group">
+        <legend>Odgovorno lice</legend>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="korisnickoIme">Korisničko ime</label>
+            <input
+              class="input"
+              id="korisnickoIme"
+              name="korisnickoIme"
+              type="text"
+              readonly
+              aria-describedby="korisnickoImePomoc"
+              [ngModel]="korisnickoIme"
+            />
+            <p id="korisnickoImePomoc" class="hint">Korisničko ime se ne može menjati.</p>
+          </div>
+
+          <div class="field">
+            <label for="email">E-mail adresa</label>
+            <input
+              class="input"
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              email
+              [(ngModel)]="email"
+              #emailPolje="ngModel"
+            />
+            @if (emailPolje.invalid && (emailPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite ispravnu e-mail adresu.</p>
+            }
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="ime">Ime</label>
+            <input
+              class="input"
+              id="ime"
+              name="ime"
+              type="text"
+              autocomplete="given-name"
+              required
+              [(ngModel)]="ime"
+              #imePolje="ngModel"
+            />
+            @if (imePolje.invalid && (imePolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite ime.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="prezime">Prezime</label>
+            <input
+              class="input"
+              id="prezime"
+              name="prezime"
+              type="text"
+              autocomplete="family-name"
+              required
+              [(ngModel)]="prezime"
+              #prezimePolje="ngModel"
+            />
+            @if (prezimePolje.invalid && (prezimePolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite prezime.</p>
+            }
+          </div>
+        </div>
+
+        <div class="field field--narrow">
+          <label for="telefon">Kontakt telefon</label>
+          <input
+            class="input"
+            id="telefon"
+            name="telefon"
+            type="tel"
+            autocomplete="tel"
+            required
+            pattern="^\+?[0-9 \/\-]{6,20}$"
+            [(ngModel)]="telefon"
+            #telefonPolje="ngModel"
+          />
+          @if (telefonPolje.invalid && (telefonPolje.touched || forma.submitted)) {
+            <p class="field-error" role="alert">Unesite ispravan broj telefona.</p>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>Podaci o instituciji</legend>
+
+        <div class="field">
+          <label for="nazivInstitucije">Naziv štamparije</label>
+          <input
+            class="input"
+            id="nazivInstitucije"
+            name="nazivInstitucije"
+            type="text"
+            autocomplete="organization"
+            required
+            [(ngModel)]="nazivInstitucije"
+            #nazivPolje="ngModel"
+          />
+          @if (nazivPolje.invalid && (nazivPolje.touched || forma.submitted)) {
+            <p class="field-error" role="alert">Unesite naziv štamparije.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="adresaSedista">Adresa sedišta</label>
+          <input
+            class="input"
+            id="adresaSedista"
+            name="adresaSedista"
+            type="text"
+            autocomplete="street-address"
+            required
+            [(ngModel)]="adresaSedista"
+            #adresaPolje="ngModel"
+          />
+          @if (adresaPolje.invalid && (adresaPolje.touched || forma.submitted)) {
+            <p class="field-error" role="alert">Unesite adresu sedišta.</p>
+          }
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="maticniBroj">Matični broj</label>
+            <input
+              class="input"
+              id="maticniBroj"
+              name="maticniBroj"
+              type="text"
+              inputmode="numeric"
+              maxlength="8"
+              required
+              pattern="^\d{8}$"
+              aria-describedby="maticniBrojPomoc"
+              [(ngModel)]="maticniBroj"
+              #maticniPolje="ngModel"
+            />
+            <p
+              id="maticniBrojPomoc"
+              class="hint"
+              [class.hint--error]="maticniPolje.invalid && (maticniPolje.touched || forma.submitted)"
+            >
+              Tačno 8 cifara.
+            </p>
+          </div>
+
+          <div class="field">
+            <label for="pib">PIB</label>
+            <input
+              class="input"
+              id="pib"
+              name="pib"
+              type="text"
+              inputmode="numeric"
+              maxlength="9"
+              required
+              pattern="^[1-9]\d{8}$"
+              aria-describedby="pibPomoc"
+              [(ngModel)]="pib"
+              #pibPolje="ngModel"
+            />
+            <p
+              id="pibPomoc"
+              class="hint"
+              [class.hint--error]="pibPolje.invalid && (pibPolje.touched || forma.submitted)"
+            >
+              9 cifara, ne sme počinjati nulom.
+            </p>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="btn-row">
+        <button class="btn" type="submit">Sačuvaj izmene</button>
+      </div>
+    </form>
+  </section>
+</main>

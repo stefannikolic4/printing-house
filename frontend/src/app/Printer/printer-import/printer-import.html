@@ -1,0 +1,113 @@
+<main class="page">
+  <h1 class="page-title">Dodavanje iz fajla</h1>
+
+  <ol class="steps" aria-label="Koraci">
+    <li [class.steps-active]="korak === 1" [attr.aria-current]="korak === 1 ? 'step' : null">
+      Učitavanje fajla
+    </li>
+    <li [class.steps-active]="korak === 2" [attr.aria-current]="korak === 2 ? 'step' : null">
+      Slike proizvoda
+    </li>
+  </ol>
+
+  @if (uspeh) {
+    <p class="alert alert-success" role="status">
+      Proizvodi i usluge su dodati. <a routerLink="/stampar/kolicine">Pogledaj količine</a>
+    </p>
+  }
+  @if (greska) {
+    <p class="alert alert-error" role="alert">{{ greska }}</p>
+  }
+
+  @if (korak === 1) {
+    <section class="panel" aria-labelledby="fajl-naslov">
+      <h2 id="fajl-naslov">Lager lista</h2>
+      <p class="panel-note">
+        Izaberite JSON fajl sa proizvodima i uslugama. Slike dodajete u sledećem koraku.
+      </p>
+
+      <div class="field">
+        <label for="fajl">JSON fajl</label>
+        <input
+          class="file-input"
+          id="fajl"
+          type="file"
+          accept=".json,application/json"
+          (change)="onFajlOdabran($event)"
+        />
+        @if (greskaFajla) {
+          <p class="field-error" role="alert">{{ greskaFajla }}</p>
+        }
+      </div>
+    </section>
+  } @else {
+    <section class="panel" aria-labelledby="slike-naslov">
+      <h2 id="slike-naslov">Slike proizvoda</h2>
+      <p class="panel-note">
+        {{ nazivStamparije }}: u fajlu je {{ proizvodi.length }} proizvoda. Za svaki dodajte glavnu
+        sliku i, ako želite, do 3 dodatne.
+      </p>
+
+      @for (p of proizvodi; track p.sifra) {
+        <article class="import-item">
+          <h3>{{ p.naziv }}</h3>
+          <p class="import-meta">
+            Šifra {{ p.sifra }}, {{ p.kategorija }} / {{ p.potkategorija }}, {{ p.cena | number: '1.2-2' }} RSD,
+            na stanju: {{ p.kolicina }}
+          </p>
+
+          <div class="grid-2">
+            <div class="field">
+              <label [attr.for]="'glavna-' + p.sifra">Glavna slika</label>
+              <input
+                class="file-input"
+                type="file"
+                accept="image/jpeg,image/png,image/gif"
+                [id]="'glavna-' + p.sifra"
+                (change)="onGlavnaSlika($event, p)"
+              />
+            </div>
+
+            <div class="field">
+              <label [attr.for]="'dodatne-' + p.sifra">Dodatne slike (najviše 3)</label>
+              <input
+                class="file-input"
+                type="file"
+                accept="image/jpeg,image/png,image/gif"
+                multiple
+                [id]="'dodatne-' + p.sifra"
+                (change)="onDodatneSlike($event, p)"
+              />
+            </div>
+          </div>
+
+          @if (p.glavnaPreview || p.dodatnePreview.length > 0) {
+            <ul class="previews">
+              @if (p.glavnaPreview) {
+                <li>
+                  <img class="preview" [src]="p.glavnaPreview" [alt]="'Glavna slika: ' + p.naziv" />
+                  <span class="preview-label">Glavna</span>
+                </li>
+              }
+              @for (d of p.dodatnePreview; track d; let i = $index) {
+                <li>
+                  <img class="preview" [src]="d" [alt]="'Dodatna slika ' + (i + 1) + ': ' + p.naziv" />
+                  <span class="preview-label">Dodatna {{ i + 1 }}</span>
+                </li>
+              }
+            </ul>
+          }
+
+          @if (p.greska) {
+            <p class="field-error" role="alert">{{ p.greska }}</p>
+          }
+        </article>
+      }
+
+      <div class="btn-row">
+        <button type="button" class="btn btn--secondary" (click)="nazad()">Nazad</button>
+        <button type="button" class="btn" (click)="sacuvaj()">Sačuvaj proizvode</button>
+      </div>
+    </section>
+  }
+</main>

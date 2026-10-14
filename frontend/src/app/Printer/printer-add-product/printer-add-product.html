@@ -1,0 +1,309 @@
+<main class="page">
+  <h1 class="page-title">Proizvodi i usluge</h1>
+
+  <section class="panel" aria-labelledby="dodavanje-naslov">
+    <h2 id="dodavanje-naslov">Novi proizvod</h2>
+
+    @if (uspeh) {
+      <p class="alert alert-success" role="status">Proizvod je dodat.</p>
+    }
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+
+    <form #forma="ngForm" (ngSubmit)="dodaj(forma)" novalidate>
+
+      <fieldset class="group">
+        <legend>Osnovni podaci</legend>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="sifra">Šifra</label>
+            <input
+              class="input"
+              id="sifra"
+              name="sifra"
+              type="text"
+              autocomplete="off"
+              required
+              [(ngModel)]="sifra"
+              #sifraPolje="ngModel"
+            />
+            @if (sifraPolje.invalid && (sifraPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite šifru proizvoda.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="naziv">Naziv proizvoda</label>
+            <input
+              class="input"
+              id="naziv"
+              name="naziv"
+              type="text"
+              autocomplete="off"
+              required
+              [(ngModel)]="naziv"
+              #nazivPolje="ngModel"
+            />
+            @if (nazivPolje.invalid && (nazivPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite naziv proizvoda.</p>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="opis">Opis</label>
+          <textarea
+            class="input"
+            id="opis"
+            name="opis"
+            rows="4"
+            required
+            [(ngModel)]="opis"
+            #opisPolje="ngModel"
+          ></textarea>
+          @if (opisPolje.invalid && (opisPolje.touched || forma.submitted)) {
+            <p class="field-error" role="alert">Unesite opis proizvoda.</p>
+          }
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="kategorija">Kategorija</label>
+            <select
+              class="input"
+              id="kategorija"
+              name="kategorija"
+              required
+              [(ngModel)]="kategorija"
+              (ngModelChange)="promeniKategoriju()"
+              #kategorijaPolje="ngModel"
+            >
+              <option value="" disabled>Izaberite kategoriju</option>
+              @for (k of kategorije; track k) {
+                <option [value]="k">{{ k }}</option>
+              }
+            </select>
+            @if (kategorijaPolje.invalid && (kategorijaPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Izaberite kategoriju.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="potkategorija">Potkategorija</label>
+            <select
+              class="input"
+              id="potkategorija"
+              name="potkategorija"
+              required
+              [disabled]="!kategorija"
+              [(ngModel)]="potkategorija"
+              #potkategorijaPolje="ngModel"
+            >
+              <option value="" disabled>Izaberite potkategoriju</option>
+              @for (p of potkategorije; track p) {
+                <option [value]="p">{{ p }}</option>
+              }
+            </select>
+            @if (potkategorijaPolje.invalid && (potkategorijaPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Izaberite potkategoriju.</p>
+            }
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="cena">Jedinična cena (RSD)</label>
+            <input
+              class="input"
+              id="cena"
+              name="cena"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              [(ngModel)]="cena"
+              #cenaPolje="ngModel"
+            />
+            @if (cenaPolje.invalid && (cenaPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite cenu (0 ili veću).</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="kolicina">Količina na lageru</label>
+            <input
+              class="input"
+              id="kolicina"
+              name="kolicina"
+              type="number"
+              min="0"
+              step="1"
+              required
+              [(ngModel)]="kolicina"
+              #kolicinaPolje="ngModel"
+            />
+            @if (kolicinaPolje.invalid && (kolicinaPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite količinu (ceo broj, 0 ili veći).</p>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="boje">Dostupne boje</label>
+          <input
+            class="input"
+            id="boje"
+            name="boje"
+            type="text"
+            autocomplete="off"
+            aria-describedby="bojePomoc"
+            [(ngModel)]="boje"
+          />
+          <p id="bojePomoc" class="hint">
+            Odvojene zarezom, na primer: Bela, Crna. Ako ostavite prazno, klijent vidi belu.
+          </p>
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>Slike proizvoda</legend>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="glavnaSlika">Glavna slika</label>
+            <input
+              class="file-input"
+              id="glavnaSlika"
+              name="glavnaSlika"
+              type="file"
+              accept="image/jpeg,image/png,image/gif"
+              (change)="onGlavnaSlika($event)"
+            />
+          </div>
+
+          <div class="field">
+            <label for="dodatneSlike">Dodatne slike</label>
+            <input
+              class="file-input"
+              id="dodatneSlike"
+              name="dodatneSlike"
+              type="file"
+              accept="image/jpeg,image/png,image/gif"
+              multiple
+              aria-describedby="dodatnePomoc"
+              (change)="onDodatneSlike($event)"
+            />
+            <p id="dodatnePomoc" class="hint">Najviše 3 dodatne slike.</p>
+          </div>
+        </div>
+
+        @if (glavnaPreview || dodatnePreview.length > 0) {
+          <ul class="previews">
+            @if (glavnaPreview) {
+              <li>
+                <img class="preview" [src]="glavnaPreview" alt="Glavna slika proizvoda" />
+                <span class="preview-label">Glavna</span>
+              </li>
+            }
+            @for (d of dodatnePreview; track d; let i = $index) {
+              <li>
+                <img class="preview" [src]="d" [alt]="'Dodatna slika ' + (i + 1)" />
+                <span class="preview-label">Dodatna {{ i + 1 }}</span>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (slikeGreska) {
+          <p class="field-error" role="alert">{{ slikeGreska }}</p>
+        }
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>Usluge štampe</legend>
+        <p class="panel-note">
+          Usluge su specijalizovani tipovi štampe ili preslikača koji povećavaju cenu po proizvodu.
+        </p>
+
+        @for (u of usluge; track u; let i = $index) {
+          <div class="service-row">
+            <div class="field">
+              <label [attr.for]="'uslugaTip' + i">Vrsta štampe</label>
+              <input
+                class="input"
+                type="text"
+                required
+                [id]="'uslugaTip' + i"
+                [name]="'uslugaTip' + i"
+                [(ngModel)]="u.tip"
+              />
+            </div>
+
+            <div class="field">
+              <label [attr.for]="'uslugaCena' + i">Dodatna cena po komadu (RSD)</label>
+              <input
+                class="input"
+                type="number"
+                min="0"
+                step="0.01"
+                required
+                [id]="'uslugaCena' + i"
+                [name]="'uslugaCena' + i"
+                [(ngModel)]="u.dodatnaCena"
+              />
+            </div>
+
+            <div class="field">
+              <label [attr.for]="'uslugaSirina' + i">Maks. širina (mm)</label>
+              <input
+                class="input"
+                type="number"
+                min="1"
+                step="1"
+                required
+                [id]="'uslugaSirina' + i"
+                [name]="'uslugaSirina' + i"
+                [(ngModel)]="u.maxSirina"
+              />
+            </div>
+
+            <div class="field">
+              <label [attr.for]="'uslugaVisina' + i">Maks. visina (mm)</label>
+              <input
+                class="input"
+                type="number"
+                min="1"
+                step="1"
+                required
+                [id]="'uslugaVisina' + i"
+                [name]="'uslugaVisina' + i"
+                [(ngModel)]="u.maxVisina"
+              />
+            </div>
+
+            <button
+              type="button"
+              class="btn btn--danger"
+              [attr.aria-label]="'Ukloni uslugu ' + (i + 1)"
+              (click)="ukloniUslugu(i)"
+            >
+              Ukloni
+            </button>
+          </div>
+        } @empty {
+          <p class="hint">Još nije dodata nijedna usluga.</p>
+        }
+
+        <div class="btn-row">
+          <button type="button" class="btn btn--secondary" (click)="dodajUslugu()">Dodaj uslugu</button>
+        </div>
+      </fieldset>
+
+      <div class="btn-row">
+        <button class="btn" type="submit">Dodaj proizvod</button>
+      </div>
+    </form>
+  </section>
+</main>

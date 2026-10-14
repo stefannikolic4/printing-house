@@ -1,0 +1,7 @@
+.map {
+  min-height: 14rem;
+}
+
+.map.leaflet-container {
+  background: var(--table);
+}

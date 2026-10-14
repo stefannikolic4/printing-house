@@ -1,0 +1,81 @@
+<div class="home">
+  <header class="topbar">
+    <a class="brand" routerLink="/">
+      <svg class="regmark" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="none" stroke-width="2">
+          <g stroke="#e6007e" transform="translate(2 2)">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+          <g stroke="currentColor">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+        </g>
+      </svg>
+      <span>Printing House</span>
+    </a>
+  </header>
+ 
+  <main class="detail">
+    <a class="back" routerLink="/">Nazad na početnu</a>
+ 
+    @if (proizvod) {
+      <h1 class="detail-title">{{ proizvod.naziv }}</h1>
+ 
+      <div class="detail-grid">
+        <section class="gallery" aria-label="Galerija slika">
+          <figure class="gallery-main">
+             @if (glavnaSlika) {
+              <img [src]="glavnaSlika" [alt]="'Slika proizvoda: ' + proizvod.naziv" />
+              } @else {
+            <p class="hint">Proizvod nema sliku.</p>
+            }
+            </figure>
+ 
+          @if (proizvod.slike.length > 1) {
+            <ul class="thumbs">
+              @for (slika of proizvod.slike; track slika; let i = $index) {
+                <li>
+                  <button
+                    type="button"
+                    class="thumb"
+                    [class.thumb--active]="slika === glavnaSlika"
+                    [attr.aria-current]="slika === glavnaSlika ? 'true' : null"
+                    [attr.aria-label]="'Prikaži sliku ' + (i + 1)"
+                    (click)="izaberiSliku(slika)"
+                  >
+                    <img [src]="slika" alt="" />
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+ 
+        <dl class="facts">
+          <div class="fact">
+            <dt>Štamparija</dt>
+            <dd>{{ proizvod.stamparija }}</dd>
+          </div>
+          <div class="fact">
+            <dt>Grad</dt>
+            <dd>{{ proizvod.grad }}</dd>
+          </div>
+          <div class="fact">
+            <dt>Sviđanja</dt>
+            <dd>{{ proizvod.brojLajkova }}</dd>
+          </div>
+          <div class="fact">
+            <dt>Nesviđanja</dt>
+            <dd>{{ proizvod.brojDislajkova }}</dd>
+          </div>
+        </dl>
+      </div>
+    } @else {
+      <p class="alert alert-error" role="alert">
+        Proizvod ne postoji ili više nije dostupan. Vratite se na početnu stranu i pretražite ponovo.
+      </p>
+    }
+  </main>
+</div>

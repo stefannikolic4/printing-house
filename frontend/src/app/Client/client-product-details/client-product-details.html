@@ -1,0 +1,154 @@
+<main class="page">
+  <a class="back" routerLink="/klijent/pretraga">Nazad na pretragu</a>
+
+  @if (proizvod) {
+    <h1 class="page-title">{{ proizvod.naziv }}</h1>
+
+    <div class="detail-grid">
+      <div class="stack">
+        <section class="gallery" aria-label="Galerija slika">
+          <figure class="gallery-main">
+            @if (glavnaSlika) {
+              <img [src]="glavnaSlika" [alt]="'Slika proizvoda: ' + proizvod.naziv" />
+            } @else {
+              <p class="hint">Proizvod nema sliku.</p>
+            }
+          </figure>
+
+          @if (proizvod.slike.length > 1) {
+            <ul class="thumbs">
+              @for (slika of proizvod.slike; track slika; let i = $index) {
+                <li>
+                  <button
+                    type="button"
+                    class="thumb"
+                    [class.thumb--active]="slika === glavnaSlika"
+                    [attr.aria-current]="slika === glavnaSlika ? 'true' : null"
+                    [attr.aria-label]="'Prikaži sliku ' + (i + 1)"
+                    (click)="izaberiSliku(slika)"
+                  >
+                    <img [src]="slika" alt="" />
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+
+        <section class="panel" aria-labelledby="opis-naslov">
+          <h2 id="opis-naslov">Opis</h2>
+          <p>{{ proizvod.opis }}</p>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="panel" aria-labelledby="stamparija-naslov">
+          <h2 id="stamparija-naslov">{{ proizvod.stamparija }}</h2>
+          <p class="panel-note">{{ proizvod.grad }}</p>
+          <div
+            class="map"
+            id="mapa"
+            role="region"
+            [attr.aria-label]="'Mapa: lokacija štamparije ' + proizvod.stamparija"
+          ></div>
+        </section>
+
+        <dl class="facts">
+          <div class="fact">
+            <dt>Cena po komadu</dt>
+            <dd>{{ proizvod.cena | number: '1.2-2' }} RSD</dd>
+          </div>
+          <div class="fact">
+            <dt>Sviđanja</dt>
+            <dd>{{ proizvod.brojLajkova }}</dd>
+          </div>
+          <div class="fact">
+            <dt>Nesviđanja</dt>
+            <dd>{{ proizvod.brojDislajkova }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <section class="panel" aria-labelledby="izbor-naslov">
+      <h2 id="izbor-naslov">Boja i vrsta štampe</h2>
+
+      @if (greska) {
+        <p class="alert alert-error" role="alert">{{ greska }}</p>
+      }
+
+      <div class="field field--narrow">
+        <label for="boja">Boja</label>
+        <select class="input" id="boja" name="boja" [(ngModel)]="izabranaBoja">
+          @for (b of proizvod.boje; track b) {
+            <option [value]="b">{{ b }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table">
+          <caption class="visually-hidden">Vrste štampe koje se mogu izvršiti na ovom proizvodu</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="visually-hidden">Izbor</span></th>
+              <th scope="col">Vrsta štampe</th>
+              <th scope="col">Maksimalne dimenzije</th>
+              <th scope="col" class="num">Dodatna cena po komadu</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of proizvod.usluge; track u.id) {
+              <tr>
+                <td>
+                  <input
+                    type="radio"
+                    name="usluga"
+                    [value]="u.id"
+                    [attr.aria-label]="'Izaberi vrstu štampe: ' + u.tip"
+                    [(ngModel)]="izabranaUsluga"
+                  />
+                </td>
+                <td>{{ u.tip }}</td>
+                <td>{{ u.maxSirina }} × {{ u.maxVisina }} mm</td>
+                <td class="num">{{ u.dodatnaCena | number: '1.2-2' }} RSD</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td class="table-empty" colspan="4">Za ovaj proizvod nema dostupnih vrsta štampe.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn" (click)="dalje()">DALJE</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="komentari-naslov">
+      <h2 id="komentari-naslov">Poslednji komentari</h2>
+
+      @if (komentari.length > 0) {
+        <ul class="comments">
+          @for (k of komentari; track k.id) {
+            <li class="comment" [class.comment--own]="k.moj">
+              <p class="comment-meta">
+                <span class="comment-user">{{ k.korisnickoIme }}</span>
+                <span>{{ k.datum | date: 'dd.MM.yyyy. HH:mm' }}</span>
+              </p>
+              <p class="comment-text">{{ k.tekst }}</p>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="panel-note">Još nema komentara za ovaj proizvod.</p>
+      }
+    </section>
+  } @else {
+    <p class="alert alert-error" role="alert">
+      Proizvod ne postoji ili više nije dostupan. Vratite se na pretragu i pokušajte ponovo.
+    </p>
+  }
+</main>

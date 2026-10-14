@@ -1,0 +1,30 @@
+<div class="home">
+  <header class="topbar topbar--menu">
+    <a class="brand" routerLink="/admin/zahtevi">
+      <svg class="regmark" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="none" stroke-width="2">
+          <g stroke="#e6007e" transform="translate(2 2)">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+          <g stroke="currentColor">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+        </g>
+      </svg>
+      <span>Printing House</span>
+    </a>
+
+    <nav class="menu" aria-label="Glavni meni">
+      <a routerLink="/admin/zahtevi" routerLinkActive="menu-active">Zahtevi za registraciju</a>
+      <a routerLink="/admin/korisnici" routerLinkActive="menu-active">Korisnici</a>
+      <a routerLink="/admin/kategorije" routerLinkActive="menu-active">Kategorije</a>
+      <a routerLink="/admin/statistika" routerLinkActive="menu-active">Statistika</a>
+    </nav>
+
+    <button type="button" class="link-btn" (click)="odjava()">Odjavi se</button>
+  </header>
+
+  <router-outlet />
+</div>

@@ -1,0 +1,76 @@
+<main class="page">
+  <h1 class="page-title">Kategorije proizvoda</h1>
+
+  @if (uspeh) {
+    <p class="alert alert-success" role="status">{{ uspeh }}</p>
+  }
+  @if (greska) {
+    <p class="alert alert-error" role="alert">{{ greska }}</p>
+  }
+
+  <section class="panel" aria-labelledby="nova-kategorija-naslov">
+    <h2 id="nova-kategorija-naslov">Nova kategorija</h2>
+
+    <form class="add-form" #kategorijaForma="ngForm" (ngSubmit)="dodajKategoriju(kategorijaForma)" novalidate>
+      <div class="field">
+        <label for="novaKategorija">Naziv kategorije</label>
+        <input
+          class="input"
+          id="novaKategorija"
+          name="novaKategorija"
+          type="text"
+          autocomplete="off"
+          required
+          [(ngModel)]="novaKategorija"
+          #novaKategorijaPolje="ngModel"
+        />
+        @if (novaKategorijaPolje.invalid && (novaKategorijaPolje.touched || kategorijaForma.submitted)) {
+          <p class="field-error" role="alert">Unesite naziv kategorije.</p>
+        }
+      </div>
+
+      <button type="submit" class="btn">Dodaj kategoriju</button>
+    </form>
+  </section>
+
+  @for (k of kategorije; track k.id) {
+    <section class="panel" [attr.aria-labelledby]="'kategorija-' + k.id">
+      <h2 [id]="'kategorija-' + k.id">{{ k.naziv }}</h2>
+
+      @if (k.potkategorije.length > 0) {
+        <ul class="tag-list">
+          @for (p of k.potkategorije; track p) {
+            <li>{{ p }}</li>
+          }
+        </ul>
+      } @else {
+        <p class="panel-note">Ova kategorija još nema potkategorija.</p>
+      }
+
+      <form class="add-form" #potkategorijaForma="ngForm" (ngSubmit)="dodajPotkategoriju(k, potkategorijaForma)" novalidate>
+        <div class="field">
+          <label [attr.for]="'novaPotkategorija-' + k.id">Nova potkategorija</label>
+          <input
+            class="input"
+            name="novaPotkategorija"
+            type="text"
+            autocomplete="off"
+            required
+            [id]="'novaPotkategorija-' + k.id"
+            [(ngModel)]="k.novaPotkategorija"
+            #novaPotkategorijaPolje="ngModel"
+          />
+          @if (novaPotkategorijaPolje.invalid && (novaPotkategorijaPolje.touched || potkategorijaForma.submitted)) {
+            <p class="field-error" role="alert">Unesite naziv potkategorije.</p>
+          }
+        </div>
+
+        <button type="submit" class="btn">Dodaj potkategoriju</button>
+      </form>
+    </section>
+  } @empty {
+    <section class="panel">
+      <p class="panel-note">Još nema kategorija. Dodajte prvu iznad.</p>
+    </section>
+  }
+</main>

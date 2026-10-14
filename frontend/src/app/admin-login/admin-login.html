@@ -1,0 +1,75 @@
+<main class="auth-page">
+  <section class="sheet sheet--admin">
+    <div class="brand">
+      <svg class="regmark" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="none" stroke-width="2">
+          <g stroke="#e6007e" transform="translate(2 2)">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+          <g stroke="currentColor">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+        </g>
+      </svg>
+      <span>Printing House</span>
+    </div>
+ 
+    <h1>Prijava administratora</h1>
+ 
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+ 
+    <form #forma="ngForm" (ngSubmit)="prijavaAdmin(forma)" novalidate>
+      <div class="field">
+        <label for="adminKorisnickoIme">Korisničko ime</label>
+        <input
+          class="input"
+          id="adminKorisnickoIme"
+          name="korisnickoIme"
+          type="text"
+          autocomplete="username"
+          required
+          [(ngModel)]="korisnickoIme"
+          #korisnickoImePolje="ngModel"
+        />
+        @if (korisnickoImePolje.invalid && (korisnickoImePolje.touched || forma.submitted)) {
+          <p class="field-error" role="alert">Unesite korisničko ime.</p>
+        }
+      </div>
+ 
+      <div class="field">
+        <label for="adminLozinka">Lozinka</label>
+        <div class="pass-wrap">
+          <input
+            class="input"
+            id="adminLozinka"
+            name="lozinka"
+            [type]="prikaziLozinku ? 'text' : 'password'"
+            autocomplete="current-password"
+            required
+            [(ngModel)]="lozinka"
+            #lozinkaPolje="ngModel"
+          />
+          <button
+            type="button"
+            class="toggle-pass"
+            (click)="prikaziLozinku = !prikaziLozinku"
+            [attr.aria-pressed]="prikaziLozinku"
+            [attr.aria-label]="prikaziLozinku ? 'Sakrij lozinku' : 'Prikaži lozinku'"
+          >
+            {{ prikaziLozinku ? 'Sakrij' : 'Prikaži' }}
+          </button>
+        </div>
+        @if (lozinkaPolje.invalid && (lozinkaPolje.touched || forma.submitted)) {
+          <p class="field-error" role="alert">Unesite lozinku.</p>
+        }
+      </div>
+ 
+      <button class="btn" type="submit">Prijavi se kao administrator</button>
+    </form>
+  </section>
+</main>
+ 

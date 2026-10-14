@@ -1,0 +1,86 @@
+<main class="page">
+  <h1 class="page-title">Zahtevi za registraciju</h1>
+
+  <section class="panel" aria-labelledby="zahtevi-naslov">
+    <h2 id="zahtevi-naslov">Neodobreni korisnici</h2>
+
+    @if (uspeh) {
+      <p class="alert alert-success" role="status">{{ uspeh }}</p>
+    }
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+
+    <div class="table-wrap">
+      <table class="table">
+        <caption class="visually-hidden">Zahtevi za registraciju koji čekaju odobrenje</caption>
+        <thead>
+          <tr>
+            <th scope="col"><span class="visually-hidden">Slika</span></th>
+            <th scope="col">Korisnik</th>
+            <th scope="col">Vrsta</th>
+            <th scope="col">Kontakt</th>
+            <th scope="col">Institucija</th>
+            <th scope="col"><span class="visually-hidden">Akcije</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (z of zahtevi; track z.id) {
+            <tr>
+              <td>
+                <img
+                  class="avatar avatar--small"
+                  [src]="z.slika"
+                  [alt]="'Profilna slika: ' + z.korisnickoIme"
+                  width="40"
+                  height="40"
+                />
+              </td>
+              <td>
+                {{ z.ime }} {{ z.prezime }}
+                <span class="item-meta">{{ z.korisnickoIme }}</span>
+              </td>
+              <td>
+                @switch (z.tip) {
+                  @case ('fizicko') {
+                    Klijent, fizičko lice
+                  }
+                  @case ('pravno') {
+                    Klijent, pravno lice
+                  }
+                  @default {
+                    Štamparija
+                  }
+                }
+              </td>
+              <td>
+                {{ z.email }}
+                <span class="item-meta">{{ z.telefon }}</span>
+              </td>
+              <td>
+                @if (z.tip !== 'fizicko') {
+                  {{ z.nazivInstitucije }}
+                  <span class="item-meta">{{ z.adresaSedista }}</span>
+                  <span class="item-meta">Matični broj: {{ z.maticniBroj }}</span>
+                  <span class="item-meta">PIB: {{ z.pib }}</span>
+                } @else {
+                  —
+                }
+              </td>
+              <td class="cell-action">
+                <div class="btn-row">
+                  <button type="button" class="btn btn--small" (click)="prihvati(z)">Prihvati</button>
+                  <button type="button" class="btn btn--small btn--danger" (click)="odbaci(z)">Odbaci</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="table-empty" colspan="6">Nema zahteva koji čekaju odobrenje.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

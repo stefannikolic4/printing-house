@@ -1,0 +1,68 @@
+<main class="auth-page">
+  <section class="sheet">
+    <div class="brand">
+      <svg class="regmark" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="none" stroke-width="2">
+          <g stroke="#e6007e" transform="translate(2 2)">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+          <g stroke="currentColor">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+        </g>
+      </svg>
+      <span>Printing House</span>
+    </div>
+ 
+    <h1>Prijava</h1>
+ 
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+ 
+    <form #forma="ngForm" (ngSubmit)="prijava(forma)" novalidate>
+      <div class="field">
+        <label for="korisnickoIme">Korisničko ime</label>
+        <input
+          class="input"
+          id="korisnickoIme"
+          name="korisnickoIme"
+          type="text"
+          autocomplete="username"
+          required
+          [(ngModel)]="korisnickoIme"
+          #korisnickoImePolje="ngModel"
+        />
+        @if (korisnickoImePolje.invalid && (korisnickoImePolje.touched || forma.submitted)) {
+          <p class="field-error" role="alert">Unesite korisničko ime.</p>
+        }
+      </div>
+ 
+      <div class="field">
+        <label for="lozinka">Lozinka</label>
+        <input
+          class="input"
+          id="lozinka"
+          name="lozinka"
+          type="password"
+          autocomplete="current-password"
+          required
+          [(ngModel)]="lozinka"
+          #lozinkaPolje="ngModel"
+        />
+        @if (lozinkaPolje.invalid && (lozinkaPolje.touched || forma.submitted)) {
+          <p class="field-error" role="alert">Unesite lozinku.</p>
+        }
+      </div>
+ 
+      <button class="btn" type="submit">Prijavi se</button>
+    </form>
+    
+    <footer class="sheet-foot">
+      <p><a routerLink="/zaboravljena-lozinka">Zaboravili ste lozinku?</a></p>
+      <p>Nemate nalog? <a routerLink="/registracija">Registrujte se</a></p>
+    </footer>
+  </section>
+</main>

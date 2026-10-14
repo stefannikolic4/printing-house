@@ -1,0 +1,25 @@
+# Node / dependencies
+node_modules/
+
+# Build output
+dist/
+out-tsc/
+
+# Angular
+.angular/
+
+# User uploads
+backend_Node/uploads/
+
+# IDEs / editors
+.vscode/
+.history/
+
+# Logs & caches
+npm-debug.log*
+.sass-cache/
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db

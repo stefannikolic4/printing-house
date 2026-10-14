@@ -1,0 +1,82 @@
+<main class="page">
+  <h1 class="page-title">Licitacije</h1>
+
+  @if (uspeh) {
+    <p class="alert alert-success" role="status">{{ uspeh }}</p>
+  }
+  @if (greska) {
+    <p class="alert alert-error" role="alert">{{ greska }}</p>
+  }
+
+  @for (n of nabavke; track n.id) {
+    <section class="panel" [attr.aria-label]="'Javna nabavka ' + n.id">
+      <div class="shop-head">
+        <h2>Javna nabavka {{ n.id }}</h2>
+        <span class="shop-city">Raspisana {{ n.objavljena | date: 'dd.MM.yyyy. HH:mm' }}</span>
+        @if (n.preostalo) {
+          <span class="shop-city">Preostalo vreme: {{ n.preostalo }}</span>
+        }
+      </div>
+
+      <form #ponudaForma="ngForm" (ngSubmit)="posaljiPonudu(n, ponudaForma)" novalidate>
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="visually-hidden">Traženi proizvodi za javnu nabavku {{ n.id }}</caption>
+            <thead>
+              <tr>
+                <th scope="col">Proizvod</th>
+                <th scope="col" class="num">Količina</th>
+                <th scope="col" class="num">Cena po komadu (RSD)</th>
+                <th scope="col" class="num">Ukupno (RSD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of n.stavke; track $index; let i = $index) {
+                <tr>
+                  <td>{{ s.naziv }}</td>
+                  <td class="num">{{ s.kolicina }}</td>
+                  <td class="num">
+                    @if (n.ponudaPoslata) {
+                      {{ n.cene[i] | number: '1.2-2' }}
+                    } @else {
+                      <input
+                        class="input input--num"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        required
+                        [name]="'cena' + i"
+                        [attr.aria-label]="'Cena po komadu za ' + s.naziv"
+                        [(ngModel)]="n.cene[i]"
+                      />
+                    }
+                  </td>
+                  <td class="num">{{ (n.cene[i] ?? 0) * s.kolicina | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Ukupna ponuda</td>
+                <td class="num">{{ ukupnaPonuda(n) | number: '1.2-2' }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        @if (n.ponudaPoslata) {
+          <p class="alert alert-success" role="status">Ponuda za ovu nabavku je poslata.</p>
+        } @else {
+          <p class="panel-note">Po javnoj nabavci šaljete jednu ponudu, sa svim traženim proizvodima.</p>
+          <div class="btn-row">
+            <button type="submit" class="btn">Pošalji ponudu</button>
+          </div>
+        }
+      </form>
+    </section>
+  } @empty {
+    <section class="panel">
+      <p class="panel-note">Trenutno nema otvorenih javnih nabavki.</p>
+    </section>
+  }
+</main>

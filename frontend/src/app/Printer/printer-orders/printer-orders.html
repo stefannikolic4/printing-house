@@ -1,0 +1,65 @@
+<main class="page">
+  <h1 class="page-title">Naručeni proizvodi</h1>
+
+  <section class="panel" aria-labelledby="narudzbine-naslov">
+    <h2 id="narudzbine-naslov">Narudžbine klijenata</h2>
+
+    @if (uspeh) {
+      <p class="alert alert-success" role="status">{{ uspeh }}</p>
+    }
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+
+    <div class="table-wrap">
+      <table class="table">
+        <caption class="visually-hidden">Narudžbine klijenata</caption>
+        <thead>
+          <tr>
+            <th scope="col">ID fakture</th>
+            <th scope="col">Klijent</th>
+            <th scope="col">Proizvodi (količina)</th>
+            <th scope="col" class="num">Ukupno (RSD)</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Akcije</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (n of narudzbine; track n.id) {
+            <tr>
+              <td>{{ n.id }}</td>
+              <td>{{ n.klijent }}</td>
+              <td>
+                <ol class="order-items">
+                  @for (s of n.stavke; track $index) {
+                    <li>
+                      {{ s.naziv }} ({{ s.kolicina }})
+                      <span class="item-meta">{{ s.tipStampe }}</span>
+                    </li>
+                  }
+                </ol>
+              </td>
+              <td class="num">{{ n.ukupno | number: '1.2-2' }}</td>
+              <td><span class="status">{{ n.status }}</span></td>
+              <td class="cell-action">
+                @if (n.status === 'naručeno' || n.status === 'plaćeno') {
+                  <button type="button" class="btn btn--small" (click)="uStampu(n)">
+                    Prebaci u štampu
+                  </button>
+                } @else if (n.status === 'u štampi') {
+                  <button type="button" class="btn btn--small" (click)="isporuceno(n)">
+                    Označi kao isporučeno
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="table-empty" colspan="6">Još nema narudžbina za vaše proizvode.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

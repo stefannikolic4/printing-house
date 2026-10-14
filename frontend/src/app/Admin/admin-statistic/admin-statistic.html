@@ -1,0 +1,121 @@
+<main class="page">
+  <h1 class="page-title">Statistika</h1>
+
+  @if (greska) {
+    <p class="alert alert-error" role="alert">{{ greska }}</p>
+  }
+
+  <div class="chart-grid">
+    <section class="panel" aria-labelledby="promet-naslov">
+      <h2 id="promet-naslov">Promet štamparija</h2>
+      <p class="panel-note">Poslednji kvartal (3 meseca), od najvećeg prometa ka najmanjem.</p>
+
+      @if (promet.length === 0) {
+        <p class="hint">Nema podataka za ovaj period.</p>
+      }
+
+      <div class="chart" [hidden]="promet.length === 0">
+        <canvas
+          #barGrafikon
+          role="img"
+          aria-label="Stubičasti grafikon prometa štamparija u poslednjem kvartalu"
+        ></canvas>
+      </div>
+
+      <details class="chart-data">
+        <summary>Prikaži podatke u tabeli</summary>
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="visually-hidden">Promet štamparija u poslednjem kvartalu</caption>
+            <thead>
+              <tr>
+                <th scope="col">Štamparija</th>
+                <th scope="col" class="num">Promet (RSD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of promet; track s.naziv) {
+                <tr>
+                  <td>{{ s.naziv }}</td>
+                  <td class="num">{{ s.iznos | number: '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel" aria-labelledby="pita-naslov">
+      <h2 id="pita-naslov">Najčešće naručivani proizvodi</h2>
+      <p class="panel-note">Poslednjih mesec dana, udeo u ukupnoj naručenoj količini.</p>
+
+      @if (udeli.length === 0) {
+        <p class="hint">Nema podataka za ovaj period.</p>
+      }
+
+      <div class="chart" [hidden]="udeli.length === 0">
+        <canvas
+          #pitaGrafikon
+          role="img"
+          aria-label="Pita grafikon udela najčešće naručivanih proizvoda u poslednjih mesec dana"
+        ></canvas>
+      </div>
+
+      <details class="chart-data">
+        <summary>Prikaži podatke u tabeli</summary>
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="visually-hidden">Udeo proizvoda u naručenoj količini</caption>
+            <thead>
+              <tr>
+                <th scope="col">Proizvod</th>
+                <th scope="col" class="num">Količina</th>
+                <th scope="col" class="num">Udeo</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of udeli; track u.naziv) {
+                <tr>
+                  <td>{{ u.naziv }}</td>
+                  <td class="num">{{ u.kolicina }}</td>
+                  <td class="num">{{ u.procenat | number: '1.0-1' }} %</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="ocene-naslov">
+    <h2 id="ocene-naslov">Kretanje ocene proizvoda</h2>
+    <p class="panel-note">
+      Ocena proizvoda tokom vremena. Isključite proizvode koje ne želite da vidite na grafikonu.
+    </p>
+
+    <fieldset class="check-list">
+      <legend class="visually-hidden">Proizvodi na grafikonu</legend>
+      @for (p of proizvodiOcene; track p.id) {
+        <label class="check">
+          <input
+            type="checkbox"
+            [name]="'proizvod' + p.id"
+            [(ngModel)]="p.prikazan"
+            (ngModelChange)="osveziLinijski()"
+          />
+          {{ p.naziv }}
+        </label>
+      }
+    </fieldset>
+
+    <div class="chart chart--tall">
+      <canvas
+        #linijskiGrafikon
+        role="img"
+        aria-label="Linijski grafikon kretanja ocene izabranih proizvoda tokom vremena"
+      ></canvas>
+    </div>
+  </section>
+</main>

@@ -1,0 +1,180 @@
+<div class="home">
+  <header class="topbar">
+    <h1 class="brand">
+      <svg class="regmark" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="none" stroke-width="2">
+          <g stroke="#e6007e" transform="translate(2 2)">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+          <g stroke="currentColor">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+        </g>
+      </svg>
+      <span>Printing House</span>
+    </h1>
+  </header>
+ 
+  <div class="home-grid">
+    <main class="home-main">
+ 
+      <section class="panel" aria-labelledby="najbolji-naslov">
+        <p class="stat">
+          <span class="stat-label">Registrovanih štamparija</span>
+          <span class="stat-value">{{ brojStamparija }}</span>
+        </p>
+ 
+        <h2 id="najbolji-naslov">Najbolje ocenjeni proizvodi</h2>
+        <p class="panel-note">Pet proizvoda sa najviše sviđanja.</p>
+ 
+        @if (top5.length > 0) {
+          <ol class="top-list">
+            @for (p of top5; track p.id) {
+              <li class="top-item">
+                <span class="top-rank">{{ $index + 1 }}</span>
+                <div>
+                  <a class="top-name" [routerLink]="['/proizvod', p.id]">{{ p.naziv }}</a>
+                  <span class="top-shop">{{ p.stamparija }}</span>
+                </div>
+                <span class="top-likes">
+                  <span class="top-likes-label">Sviđanja</span>
+                  <strong>{{ p.brojLajkova }}</strong>
+                </span>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="panel-note">Još nema ocenjenih proizvoda.</p>
+        }
+      </section>
+ 
+      <section class="panel" aria-labelledby="pretraga-naslov">
+        <h2 id="pretraga-naslov">Pretraga proizvoda</h2>
+ 
+        <form class="search" (ngSubmit)="pretrazi()">
+          <div class="field">
+            <label for="pretragaNaziv">Naziv proizvoda</label>
+            <input
+              class="input"
+              id="pretragaNaziv"
+              name="naziv"
+              type="search"
+              placeholder="npr. Hemijska olovka"
+              [(ngModel)]="naziv"
+            />
+          </div>
+ 
+          <div class="field">
+            <label for="pretragaKategorija">Kategorija</label>
+            <select class="input" id="pretragaKategorija" name="kategorija" [(ngModel)]="kategorija">
+              <option value="">Sve kategorije</option>
+              @for (k of kategorije; track k) {
+                <option [value]="k">{{ k }}</option>
+              }
+            </select>
+          </div>
+ 
+          <button class="btn" type="submit">Pretraži</button>
+        </form>
+ 
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="visually-hidden">Rezultati pretrage proizvoda</caption>
+            <thead>
+              <tr>
+                <th scope="col" [attr.aria-sort]="ariaSort">
+                  <button type="button" class="sort-btn" (click)="promeniSortiranje()">
+                    Naziv proizvoda
+                    <span
+                      class="sort-icon"
+                      [class.sort-icon--asc]="sortSmer === 'rastuce'"
+                      [class.sort-icon--desc]="sortSmer === 'opadajuce'"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </th>
+                <th scope="col">Kategorija</th>
+                <th scope="col">Štamparija</th>
+                <th scope="col"><span class="visually-hidden">Detalji</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of rezultati; track p.id) {
+                <tr>
+                  <td>{{ p.naziv }}</td>
+                  <td>{{ p.kategorija }}</td>
+                  <td>{{ p.stamparija }}</td>
+                  <td class="cell-action">
+                    <a class="btn btn--small" [routerLink]="['/proizvod', p.id]">DETALJI</a>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td class="table-empty" colspan="4">
+                    Nema proizvoda koji odgovaraju pretrazi. Promenite naziv ili izaberite drugu kategoriju.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+ 
+    <aside class="home-aside" aria-labelledby="prijava-naslov">
+      <section class="sheet">
+        <h2 id="prijava-naslov">Prijava</h2>
+ 
+        @if (greska) {
+          <p class="alert alert-error" role="alert">{{ greska }}</p>
+        }
+ 
+        <form #prijavaForma="ngForm" (ngSubmit)="prijava(prijavaForma)" novalidate>
+          <div class="field">
+            <label for="korisnickoIme">Korisničko ime</label>
+            <input
+              class="input"
+              id="korisnickoIme"
+              name="korisnickoIme"
+              type="text"
+              autocomplete="username"
+              required
+              [(ngModel)]="korisnickoIme"
+              #korisnickoImePolje="ngModel"
+            />
+            @if (korisnickoImePolje.invalid && (korisnickoImePolje.touched || prijavaForma.submitted)) {
+              <p class="field-error" role="alert">Unesite korisničko ime.</p>
+            }
+          </div>
+ 
+          <div class="field">
+            <label for="lozinka">Lozinka</label>
+            <input
+              class="input"
+              id="lozinka"
+              name="lozinka"
+              type="password"
+              autocomplete="current-password"
+              required
+              [(ngModel)]="lozinka"
+              #lozinkaPolje="ngModel"
+            />
+            @if (lozinkaPolje.invalid && (lozinkaPolje.touched || prijavaForma.submitted)) {
+              <p class="field-error" role="alert">Unesite lozinku.</p>
+            }
+          </div>
+ 
+          <button class="btn" type="submit">Prijavi se</button>
+        </form>
+ 
+        <footer class="sheet-foot">
+          <p><a routerLink="/zaboravljena-lozinka">Zaboravili ste lozinku?</a></p>
+          <p>Nemate nalog? <a routerLink="/registracija">Registrujte se</a></p>
+        </footer>
+      </section>
+    </aside>
+  </div>
+</div>
+ 

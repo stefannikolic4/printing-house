@@ -1,0 +1,60 @@
+<main class="page">
+  <h1 class="page-title">Ažuriranje količina</h1>
+
+  <section class="panel" aria-labelledby="kolicine-naslov">
+    <h2 id="kolicine-naslov">Proizvodi na stanju</h2>
+
+    @if (uspeh) {
+      <p class="alert alert-success" role="status">{{ uspeh }}</p>
+    }
+    @if (greska) {
+      <p class="alert alert-error" role="alert">{{ greska }}</p>
+    }
+
+    <div class="table-wrap">
+      <table class="table">
+        <caption class="visually-hidden">Količine proizvoda na lageru</caption>
+        <thead>
+          <tr>
+            <th scope="col">Šifra</th>
+            <th scope="col">Proizvod</th>
+            <th scope="col">Kategorija</th>
+            <th scope="col" class="num">Na stanju</th>
+            <th scope="col">Nova količina</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of proizvodi; track p.id) {
+            <tr>
+              <td>{{ p.sifra }}</td>
+              <td>{{ p.naziv }}</td>
+              <td>{{ p.kategorija }}</td>
+              <td class="num">{{ p.kolicina }}</td>
+              <td>
+                <form class="inline-form" #forma="ngForm" (ngSubmit)="sacuvaj(p, forma)" novalidate>
+                  <input
+                    class="input input--num"
+                    name="novaKolicina"
+                    type="number"
+                    min="0"
+                    step="1"
+                    required
+                    [attr.aria-label]="'Nova količina za ' + p.naziv"
+                    [(ngModel)]="p.novaKolicina"
+                  />
+                  <button type="submit" class="btn btn--small">Sačuvaj</button>
+                </form>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="table-empty" colspan="5">
+                Još nemate proizvoda. Dodajte ih u „Proizvodi i usluge" ili iz fajla.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

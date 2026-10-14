@@ -1,0 +1,334 @@
+<main class="auth-page">
+  <section class="sheet sheet--wide">
+    <div class="brand">
+      <svg class="regmark" viewBox="0 0 32 32" aria-hidden="true">
+        <g fill="none" stroke-width="2">
+          <g stroke="#e6007e" transform="translate(2 2)">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+          <g stroke="currentColor">
+            <circle cx="14" cy="14" r="8" />
+            <path d="M14 1v26M1 14h26" />
+          </g>
+        </g>
+      </svg>
+      <span>Printing House</span>
+    </div>
+ 
+    <h1>Registracija</h1>
+ 
+    @if (uspeh) {
+      <p class="alert alert-success" role="status">
+        Zahtev za registraciju je poslat. Nalog postaje aktivan kada ga administrator odobri.
+      </p>
+      <footer class="sheet-foot">
+        <p><a routerLink="/">Nazad na prijavu</a></p>
+      </footer>
+    } @else {
+      <p class="alert alert-info">
+        Nalog postaje aktivan tek kada administrator odobri vaš zahtev za registraciju.
+      </p>
+ 
+      @if (greska) {
+        <p class="alert alert-error" role="alert">{{ greska }}</p>
+      }
+ 
+      <form #forma="ngForm" (ngSubmit)="registruj(forma)" novalidate>
+ 
+        <fieldset class="group">
+          <legend>Registrujem se kao</legend>
+          <div class="choices">
+            <label class="choice">
+              <input type="radio" name="tip" value="fizicko" [(ngModel)]="tip" />
+              <span>Klijent, fizičko lice</span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="tip" value="pravno" [(ngModel)]="tip" />
+              <span>Klijent, pravno lice</span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="tip" value="stamparija" [(ngModel)]="tip" />
+              <span>Štamparija</span>
+            </label>
+          </div>
+        </fieldset>
+ 
+        <fieldset class="group">
+          <legend>Nalog</legend>
+ 
+          <div class="field">
+            <label for="korisnickoIme">Korisničko ime</label>
+            <input
+              class="input"
+              id="korisnickoIme"
+              name="korisnickoIme"
+              type="text"
+              autocomplete="username"
+              required
+              [(ngModel)]="korisnickoIme"
+              #korisnickoImePolje="ngModel"
+            />
+            @if (korisnickoImePolje.invalid && (korisnickoImePolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite korisničko ime.</p>
+            }
+          </div>
+ 
+          <div class="grid-2">
+            <div class="field">
+              <label for="lozinka">Lozinka</label>
+              <input
+                class="input"
+                id="lozinka"
+                name="lozinka"
+                type="password"
+                autocomplete="new-password"
+                required
+                pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])[A-Za-z].{7,11}$"
+                aria-describedby="lozinkaPomoc"
+                [(ngModel)]="lozinka"
+                #lozinkaPolje="ngModel"
+              />
+              <p
+                id="lozinkaPomoc"
+                class="hint"
+                [class.hint--error]="lozinkaPolje.invalid && (lozinkaPolje.touched || forma.submitted)"
+              >
+                8–12 karaktera, počinje slovom, sadrži bar jedno veliko slovo, jedan broj i
+                jedan specijalni karakter.
+              </p>
+            </div>
+ 
+            <div class="field">
+              <label for="potvrdaLozinke">Potvrda lozinke</label>
+              <input
+                class="input"
+                id="potvrdaLozinke"
+                name="potvrdaLozinke"
+                type="password"
+                autocomplete="new-password"
+                required
+                [(ngModel)]="potvrdaLozinke"
+                #potvrdaPolje="ngModel"
+              />
+              @if ((potvrdaPolje.touched || forma.submitted) && potvrdaLozinke !== lozinka) {
+                <p class="field-error" role="alert">Lozinke se ne poklapaju.</p>
+              }
+            </div>
+          </div>
+        </fieldset>
+ 
+        <fieldset class="group">
+          <legend>{{ tip === 'fizicko' ? 'Lični podaci' : 'Odgovorno lice' }}</legend>
+ 
+          <div class="grid-2">
+            <div class="field">
+              <label for="ime">Ime</label>
+              <input
+                class="input"
+                id="ime"
+                name="ime"
+                type="text"
+                autocomplete="given-name"
+                required
+                [(ngModel)]="ime"
+                #imePolje="ngModel"
+              />
+              @if (imePolje.invalid && (imePolje.touched || forma.submitted)) {
+                <p class="field-error" role="alert">Unesite ime.</p>
+              }
+            </div>
+ 
+            <div class="field">
+              <label for="prezime">Prezime</label>
+              <input
+                class="input"
+                id="prezime"
+                name="prezime"
+                type="text"
+                autocomplete="family-name"
+                required
+                [(ngModel)]="prezime"
+                #prezimePolje="ngModel"
+              />
+              @if (prezimePolje.invalid && (prezimePolje.touched || forma.submitted)) {
+                <p class="field-error" role="alert">Unesite prezime.</p>
+              }
+            </div>
+          </div>
+ 
+          <div class="grid-2">
+            <div class="field">
+              <label for="telefon">Kontakt telefon</label>
+              <input
+                class="input"
+                id="telefon"
+                name="telefon"
+                type="tel"
+                autocomplete="tel"
+                placeholder="+381 61 123 4567"
+                required
+                pattern="^\+?[0-9 \/\-]{6,20}$"
+                [(ngModel)]="telefon"
+                #telefonPolje="ngModel"
+              />
+              @if (telefonPolje.invalid && (telefonPolje.touched || forma.submitted)) {
+                <p class="field-error" role="alert">Unesite ispravan broj telefona.</p>
+              }
+            </div>
+ 
+            <div class="field">
+              <label for="email">E-mail adresa</label>
+              <input
+                class="input"
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                placeholder="ime@primer.rs"
+                required
+                email
+                [(ngModel)]="email"
+                #emailPolje="ngModel"
+              />
+              @if (emailPolje.invalid && (emailPolje.touched || forma.submitted)) {
+                <p class="field-error" role="alert">Unesite ispravnu e-mail adresu.</p>
+              }
+            </div>
+          </div>
+        </fieldset>
+ 
+        @if (tip !== 'fizicko') {
+          <fieldset class="group">
+            <legend>Podaci o instituciji</legend>
+ 
+            <div class="field">
+              <label for="nazivInstitucije">Naziv institucije</label>
+              <input
+                class="input"
+                id="nazivInstitucije"
+                name="nazivInstitucije"
+                type="text"
+                autocomplete="organization"
+                required
+                [(ngModel)]="nazivInstitucije"
+                #nazivPolje="ngModel"
+              />
+              @if (nazivPolje.invalid && (nazivPolje.touched || forma.submitted)) {
+                <p class="field-error" role="alert">Unesite naziv institucije.</p>
+              }
+            </div>
+ 
+            <div class="field">
+              <label for="adresaSedista">Adresa sedišta</label>
+              <input
+                class="input"
+                id="adresaSedista"
+                name="adresaSedista"
+                type="text"
+                autocomplete="street-address"
+                required
+                [(ngModel)]="adresaSedista"
+                #adresaPolje="ngModel"
+              />
+              @if (adresaPolje.invalid && (adresaPolje.touched || forma.submitted)) {
+                <p class="field-error" role="alert">Unesite adresu sedišta.</p>
+              }
+            </div>
+ 
+            <div class="grid-2">
+              <div class="field">
+                <label for="maticniBroj">Matični broj</label>
+                <input
+                  class="input"
+                  id="maticniBroj"
+                  name="maticniBroj"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="8"
+                  required
+                  pattern="^\d{8}$"
+                  aria-describedby="maticniBrojPomoc"
+                  [(ngModel)]="maticniBroj"
+                  #maticniPolje="ngModel"
+                />
+                <p
+                  id="maticniBrojPomoc"
+                  class="hint"
+                  [class.hint--error]="maticniPolje.invalid && (maticniPolje.touched || forma.submitted)"
+                >
+                  Tačno 8 cifara.
+                </p>
+              </div>
+ 
+              <div class="field">
+                <label for="pib">PIB</label>
+                <input
+                  class="input"
+                  id="pib"
+                  name="pib"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="9"
+                  required
+                  pattern="^[1-9]\d{8}$"
+                  aria-describedby="pibPomoc"
+                  [(ngModel)]="pib"
+                  #pibPolje="ngModel"
+                />
+                <p
+                  id="pibPomoc"
+                  class="hint"
+                  [class.hint--error]="pibPolje.invalid && (pibPolje.touched || forma.submitted)"
+                >
+                  9 cifara, ne sme počinjati nulom.
+                </p>
+              </div>
+            </div>
+          </fieldset>
+        }
+ 
+        <fieldset class="group">
+          <legend>Profilna slika</legend>
+ 
+          <div class="avatar-row">
+            <img
+              class="avatar"
+              [src]="slikaPreview ?? 'http://localhost:4000/uploads/default_profile_image.svg'"
+              alt="Pregled profilne slike"
+              width="96"
+              height="96"
+            />
+ 
+            <div class="field">
+              <label for="slika">Izaberite sliku</label>
+              <input
+                class="file-input"
+                id="slika"
+                name="slika"
+                type="file"
+                accept="image/jpeg,image/png,image/gif"
+                aria-describedby="slikaPomoc"
+                (change)="onSlikaOdabrana($event)"
+              />
+              <p id="slikaPomoc" class="hint">
+                JPG, PNG ili GIF, od 100×100 do 250×250 piksela. Ako ne dodate sliku, dobićete
+                podrazumevanu.
+              </p>
+              @if (slikaGreska) {
+                <p class="field-error" role="alert">{{ slikaGreska }}</p>
+              }
+            </div>
+          </div>
+        </fieldset>
+ 
+        <button class="btn" type="submit">Pošalji zahtev za registraciju</button>
+      </form>
+ 
+      <footer class="sheet-foot">
+        <p>Već imate nalog? <a routerLink="/">Prijavite se</a></p>
+      </footer>
+    }
+  </section>
+</main>
+ 

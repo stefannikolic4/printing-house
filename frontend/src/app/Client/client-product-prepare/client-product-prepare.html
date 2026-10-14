@@ -1,0 +1,108 @@
+<main class="page">
+  <h1 class="page-title">Priprema proizvoda</h1>
+
+  @if (proizvod) {
+    <div class="detail-grid">
+      <section aria-label="Pregled štampe na proizvodu">
+        <div class="stage">
+          <img class="stage-product" [src]="proizvod.slika" [alt]="'Proizvod: ' + proizvod.naziv" />
+          @if (slicicaPreview) {
+            <img class="stage-overlay" [src]="slicicaPreview" alt="Vaša sličica za štampu" />
+          }
+          @if (tekst) {
+            <p class="stage-text">{{ tekst }}</p>
+          }
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="priprema-naslov">
+        <h2 id="priprema-naslov">{{ proizvod.naziv }}</h2>
+
+        <dl class="facts">
+          <div class="fact">
+            <dt>Boja</dt>
+            <dd>{{ izabranaBoja }}</dd>
+          </div>
+          <div class="fact">
+            <dt>Vrsta štampe</dt>
+            <dd>{{ izabranaUsluga }}</dd>
+          </div>
+        </dl>
+
+        @if (dodato) {
+          <p class="alert alert-success" role="status">
+            Proizvod je dodat u korpu. <a routerLink="/klijent/korpa">Idi u e-korpu</a>
+          </p>
+        }
+        @if (greska) {
+          <p class="alert alert-error" role="alert">{{ greska }}</p>
+        }
+
+        <form #forma="ngForm" (ngSubmit)="dodajUKorpu(forma)" novalidate>
+          <div class="field">
+            <label for="tekst">Tekst za štampu</label>
+            <input
+              class="input"
+              id="tekst"
+              name="tekst"
+              type="text"
+              autocomplete="off"
+              [(ngModel)]="tekst"
+            />
+          </div>
+
+          <div class="field">
+            <label for="slicica">Sličica za štampu</label>
+            <input
+              class="file-input"
+              id="slicica"
+              name="slicica"
+              type="file"
+              accept="image/jpeg,image/png,image/gif"
+              aria-describedby="slicicaPomoc"
+              (change)="onSlicicaOdabrana($event)"
+            />
+            <p id="slicicaPomoc" class="hint">
+              JPG, PNG ili GIF. Slika sa providnom pozadinom (PNG) najbolje izgleda na proizvodu.
+            </p>
+            @if (slicicaGreska) {
+              <p class="field-error" role="alert">{{ slicicaGreska }}</p>
+            }
+          </div>
+
+          <div class="field field--narrow">
+            <label for="kolicina">Količina (komada)</label>
+            <input
+              class="input"
+              id="kolicina"
+              name="kolicina"
+              type="number"
+              min="1"
+              step="1"
+              required
+              [(ngModel)]="kolicina"
+              #kolicinaPolje="ngModel"
+            />
+            @if (kolicinaPolje.invalid && (kolicinaPolje.touched || forma.submitted)) {
+              <p class="field-error" role="alert">Unesite količinu od najmanje 1 komada.</p>
+            }
+          </div>
+
+          @if (upozorenje) {
+            <p class="alert alert-info" role="alert">{{ upozorenje }}</p>
+          }
+
+          <div class="btn-row">
+            <button type="button" class="btn btn--secondary" (click)="nazad()">NAZAD</button>
+            <button type="button" class="btn btn--secondary" (click)="ponisti(forma)">PONIŠTI</button>
+            <button type="submit" class="btn">DODAJ U KORPU</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  } @else {
+    <p class="alert alert-error" role="alert">
+      Proizvod ne postoji ili više nije dostupan. <a routerLink="/klijent/pretraga">Nazad na pretragu</a>
+    </p>
+  }
+</main>
